@@ -7,6 +7,7 @@ from itertools import izip
 
 dimensions = np.array([100, 100])
 num_boids = 50
+step = 0
 dt = 1.0
 neighbor_radius = 10
 desired_distance = 5
@@ -42,6 +43,7 @@ class Boid(object):
         Boid.boid_id += 1
         self.pos = np.array(pos, dtype=float)
         self.vel = np.array(vel, dtype=float)
+        self._actor = None
 
         if norm(self.vel) != 0:
             self.hdg = normalized(self.vel)
@@ -120,9 +122,10 @@ class Boid(object):
 
 
 def init():
-    global boids
+    global boids, step
 
     boids = []
+    step = 0
     #boids.append(Boid([40,40], normalized([1.1,1.])))
     #boids.append(Boid([60,60], normalized([-1.,-1.])))
     cx, cy = dimensions / 2
@@ -139,20 +142,23 @@ def init():
         boids.append(b)
 
 def draw():
-    global boids
+    global boids, step
 
-    xs = [b.pos[0] for b in boids]
-    ys = [b.pos[1] for b in boids]
-    vs = np.array([b.hdg for b in boids])
-
-    cla()
-    #plot(xs, ys, 'bo')
-    quiver(xs, ys, vs[:,0], vs[:,1], pivot='mid', headaxislength=8, headlength=8)
-    xlim(0, dimensions[0])
-    ylim(0, dimensions[1])
+    if step == 0:
+        cla()
+        xlim(0, dimensions[0])
+        ylim(0, dimensions[1])
+        for b in boids:
+            b._actor = quiver(b.pos[0], b.pos[1], b.hdg[0], b.hdg[1], \
+                    pivot='mid', headaxislength=8, headlength=8)
+    else:
+        for b in boids:
+            q = b._actor
+            q.set_offsets(b.pos.copy())
+            q.set_UVC(b.hdg[0], b.hdg[1])
 
 def update():
-    global boids
+    global boids, step
     #print "========="
     for b in boids:
         #print "step(boid{})".format(id(b))
@@ -168,6 +174,8 @@ def update():
         #print "neighbors=", map(id, neighbors)
         #print "distances=", distances
         b.step(neighbors, distances)
+
+    step += 1
 
 if __name__ == '__main__':
     import pycxsimulator
