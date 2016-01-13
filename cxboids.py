@@ -84,10 +84,10 @@ class Boid(object):
 
         return accel
 
-    def cohese(self, neighbors):
+    def cohese(self, neighbors, distances):
         center = np.array([0., 0.])
-        for b in neighbors:
-            center += b.pos / len(neighbors)
+        for b, d in izip(neighbors, distances):
+            center += (self.pos + d) / len(neighbors)
 
         accel = np.array([0., 0.])
 
@@ -101,7 +101,7 @@ class Boid(object):
         accel = np.array([0.,0.])
         accel += separation_weight * self.separate(neighbors, distances)
         accel += alignment_weight * self.align(neighbors)
-        accel += cohesion_weight * self.cohese(neighbors)
+        accel += cohesion_weight * self.cohese(neighbors, distances)
         return accel
 
     def step(self, neighbors, distances):
