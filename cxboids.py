@@ -11,7 +11,7 @@ step = 0
 dt = 1.0
 neighbor_radius = 10
 desired_distance = 5
-max_speed = 2.0
+max_speed = 1.0
 separation_weight = 0.2
 alignment_weight = 0.2
 cohesion_weight = 0.2
@@ -185,38 +185,44 @@ if __name__ == '__main__':
         num_boids = int(abs(val))
         return val
 
+    def Dt(val=dt):
+        global dt
+        dt = float(abs(val))
+        return val
+
     def Neighbor_Radius(val=neighbor_radius):
         global neighbor_radius
-        neighbor_radius = float(val)
+        neighbor_radius = float(abs(val))
         return val
 
     def Desired_Distance(val=desired_distance):
         global desired_distance
-        desired_distance = float(val)
+        desired_distance = float(abs(val))
         return val
 
     def Max_Speed(val=max_speed):
         global max_speed
-        max_speed = float(val)
+        max_speed = float(abs(val))
         return val
 
     def Separation_Weight(val=separation_weight):
         global separation_weight
-        separation_weight = float(val)
+        separation_weight = float(abs(val))
         return val
 
     def Alignment_Weight(val=alignment_weight):
         global alignment_weight
-        alignment_weight = float(val)
+        alignment_weight = float(abs(val))
         return val
 
     def Cohesion_Weight(val=cohesion_weight):
         global cohesion_weight
-        cohesion_weight = float(val)
+        cohesion_weight = float(abs(val))
         return val
 
     pSetters = [
         Num_Boids,
+        Dt,
         Neighbor_Radius,
         Desired_Distance,
         Max_Speed,
