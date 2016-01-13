@@ -6,7 +6,7 @@ import copy
 from itertools import izip
 
 dimensions = np.array([100, 100])
-num_boids = 10
+num_boids = 50
 dt = 1.0
 neighbor_radius = 10
 desired_distance = 5
@@ -171,5 +171,50 @@ def update():
 
 if __name__ == '__main__':
     import pycxsimulator
-    pycxsimulator.GUI().start(func=[init, draw, update])
+
+    def Num_Boids(val=num_boids):
+        global num_boids
+        num_boids = int(abs(val))
+        return val
+
+    def Neighbor_Radius(val=neighbor_radius):
+        global neighbor_radius
+        neighbor_radius = float(val)
+        return val
+
+    def Desired_Distance(val=desired_distance):
+        global desired_distance
+        desired_distance = float(val)
+        return val
+
+    def Max_Speed(val=max_speed):
+        global max_speed
+        max_speed = float(val)
+        return val
+
+    def Separation_Weight(val=separation_weight):
+        global separation_weight
+        separation_weight = float(val)
+        return val
+
+    def Alignment_Weight(val=alignment_weight):
+        global alignment_weight
+        alignment_weight = float(val)
+        return val
+
+    def Cohesion_Weight(val=cohesion_weight):
+        global cohesion_weight
+        cohesion_weight = float(val)
+        return val
+
+    pSetters = [
+        Num_Boids,
+        Neighbor_Radius,
+        Desired_Distance,
+        Max_Speed,
+        Separation_Weight,
+        Alignment_Weight,
+        Cohesion_Weight ]
+
+    pycxsimulator.GUI(parameterSetters=pSetters).start(func=[init, draw, update])
 
