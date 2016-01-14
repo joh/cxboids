@@ -6,15 +6,15 @@ import copy
 from itertools import izip
 
 dimensions = np.array([100, 100])
-num_boids = 50
+num_boids = 30
 step = 0
 dt = 1.0
 neighbor_radius = 10
 desired_distance = 5
-max_speed = 1.0
-separation_weight = 0.2
-alignment_weight = 0.2
-cohesion_weight = 0.2
+max_speed = 2.0
+separation_weight = 2.0
+alignment_weight = 1.0
+cohesion_weight = 1.0
 
 def normalized(v):
     v = np.array(v) # copy
