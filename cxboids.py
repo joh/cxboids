@@ -15,6 +15,7 @@ max_speed = 2.0
 separation_weight = 2.0
 alignment_weight = 1.0
 cohesion_weight = 1.0
+history = []
 
 def normalized(v):
     v = np.array(v) # copy
@@ -121,9 +122,103 @@ class Boid(object):
             self.hdg = normalized(self.vel)
 
 
-def init():
-    global boids, step
+def get_neighbors(boid):
+    neighbors = []
+    distances = []
+    for b in boids:
+        if b == boid:
+            continue
+        d = boid.distance(b)
+        if norm(d) < neighbor_radius:
+            neighbors.append(b)
+            distances.append(d)
 
+    return neighbors, distances
+
+def expand_cluster(boid):
+    visited = set()
+    queue = [boid]
+
+    while queue:
+        b = queue.pop()
+        visited.add(b)
+        neighbors,_ = get_neighbors(b)
+        for n in neighbors:
+            if n not in visited:
+                queue.append(n)
+
+    return visited
+
+def find_clusters():
+    remaining = set(boids)
+    clusters = []
+    while remaining:
+        boid = remaining.pop()
+        cl = expand_cluster(boid)
+        clusters.append(len(cl))
+        remaining -= set(cl)
+    return clusters
+
+def stats():
+    velocity = []
+    heading = []
+    num_neighbors = []
+    neighbor_distance = []
+    neighbor_heading = []
+
+    for b in boids:
+        velocity.append(norm(b.vel))
+        heading.append(np.rad2deg(np.arctan2(*b.hdg)))
+        neighbors, distances = get_neighbors(b)
+        num_neighbors.append(len(neighbors))
+        if len(neighbors) > 0:
+            neighbor_distance.append(np.mean(map(norm, distances)))
+            nhdg = np.rad2deg(np.mean([np.arctan2(*o.hdg) for o in neighbors]))
+            neighbor_heading.append(nhdg)
+
+    clusters = find_clusters()
+
+    return (step,
+            np.mean(velocity), np.var(velocity),
+            np.mean(heading), np.var(heading),
+            len(clusters), np.mean(clusters), np.var(clusters),
+            np.mean(num_neighbors), np.var(num_neighbors),
+            np.mean(neighbor_distance), np.var(neighbor_distance),
+            np.min(neighbor_distance), np.max(neighbor_distance),
+            np.mean(neighbor_heading), np.var(neighbor_heading),
+            )
+
+stats_key = ["step", "vel_mean", "vel_var", "hdg_mean", "hdg_var",
+             "#clusters", "cluster_size_mean", "cluster_size_var",
+             "#neighbors_mean", "#neighbors_var",
+             "neighbor_distance_mean", "neighbor_distance_var",
+             "neighbor_distance_min", "neighbor_distance_max",
+             "neighbor_heading_mean", "neighbor_heading_var",
+             ]
+
+def print_stats(stats):
+    step = stats[0]
+
+    if step % 10 == 0:
+        print "# " + ", ".join(stats_key)
+
+    fmt = ["%d"] + ["%.1f"] * (len(stats) - 1)
+    fmt = ", ".join(fmt)
+    print fmt % stats
+
+def save_stats(stats, filename):
+    header = ", ".join(stats_key)
+    np.savetxt(filename, stats, fmt='%.2f', delimiter=', ', header=header)
+    print "Saved %d lines of stats to %s" % (len(stats), filename)
+
+def init():
+    global boids, step, history
+
+    if history:
+        # Save history to csv
+        save_stats(history, "stats.csv")
+
+    history = []
     boids = []
     step = 0
     #boids.append(Boid([40,40], normalized([1.1,1.])))
@@ -140,6 +235,10 @@ def init():
         #vel = np.random.choice([-1.0, 1.0], size=2)
         b = Boid(pos, vel)
         boids.append(b)
+
+    s = stats()
+    history.append(s)
+    print_stats(s)
 
 def draw():
     global boids, step
@@ -162,20 +261,14 @@ def update():
     #print "========="
     for b in boids:
         #print "step(boid{})".format(id(b))
-        neighbors = []
-        distances = []
-        for o in boids:
-            if o == b:
-                continue
-            d = b.distance(o)
-            if norm(d) < neighbor_radius:
-                neighbors.append(o)
-                distances.append(d)
-        #print "neighbors=", map(id, neighbors)
-        #print "distances=", distances
+        neighbors, distances = get_neighbors(b)
         b.step(neighbors, distances)
 
     step += 1
+
+    s = stats()
+    history.append(s)
+    print_stats(s)
 
 if __name__ == '__main__':
     import pycxsimulator
