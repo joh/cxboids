@@ -238,7 +238,7 @@ def init():
 
     s = stats()
     history.append(s)
-    print_stats(s)
+    #print_stats(s)
 
 def draw():
     global boids, step
@@ -268,7 +268,7 @@ def update():
 
     s = stats()
     history.append(s)
-    print_stats(s)
+    #print_stats(s)
 
 if __name__ == '__main__':
     import pycxsimulator
