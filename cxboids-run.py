@@ -1,14 +1,16 @@
 import sys
 import cxboids
+import numpy as np
 
 n_runs = 10
 
+cxboids.dimensions = np.array([100, 100])
 cxboids.num_boids = 30
 cxboids.dt = 1.0
 cxboids.neighbor_radius = 10
 cxboids.desired_distance = 5
 cxboids.max_speed = 2.0
-cxboids.separation_weight = 1.0
+cxboids.separation_weight = 2.0
 cxboids.alignment_weight = 1.0
 cxboids.cohesion_weight = 1.0
 
