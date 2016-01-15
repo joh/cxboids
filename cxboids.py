@@ -278,6 +278,16 @@ if __name__ == '__main__':
         num_boids = int(abs(val))
         return val
 
+    def Dim_x(val=dimensions[0]):
+        global dimensions
+        dimensions[0] = int(abs(val))
+        return val
+
+    def Dim_y(val=dimensions[1]):
+        global dimensions
+        dimensions[1] = int(abs(val))
+        return val
+
     def Dt(val=dt):
         global dt
         dt = float(abs(val))
@@ -315,6 +325,8 @@ if __name__ == '__main__':
 
     pSetters = [
         Num_Boids,
+        Dim_x,
+        Dim_y,
         Dt,
         Neighbor_Radius,
         Desired_Distance,
